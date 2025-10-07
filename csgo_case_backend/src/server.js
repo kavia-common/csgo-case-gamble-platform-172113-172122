@@ -38,7 +38,7 @@ async function main() {
       secret: cfg.SESSION_SECRET,
       httpOnly: true,
       sameSite: 'lax',
-      secure: false, // local/dev. For production behind HTTPS set true.
+      secure: false, // local/dev only. For production behind HTTPS set true.
       maxAge: 1000 * 60 * 60 * 24 * 7, // 7 days
     })
   );

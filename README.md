@@ -16,6 +16,7 @@ Key environment variables
 
 Auth
 - Axios is configured with withCredentials=true; backend must set CORS to allow credentials.
+- When Steam is not configured on the backend, clicking "Login" will attempt /auth/dev-login to create a demo session automatically.
 
 ---
 
@@ -67,3 +68,48 @@ By default, DATABASE_URL points to file:./dev.db (SQLite). You can replace with 
   - Cases: Starter, Pro, Elite with weighted drop tables.
 - Randomness: utils/random.js implements weightedRandom to simulate case openings.
 - Sessions: cookie-session with SESSION_SECRET; adjust secure flag for production HTTPS.
+
+---
+
+## End-to-end local verification checklist
+
+1) Environment
+   - Backend: cp csgo_case_backend/.env.example csgo_case_backend/.env and adjust if needed.
+   - Frontend: cp csgo_case_frontend/.env.example csgo_case_frontend/.env and adjust if needed.
+   - Ensure:
+     - FRONTEND_ORIGIN=http://localhost:3000
+     - REACT_APP_API_BASE_URL=http://localhost:4000
+
+2) Backend database
+   - cd csgo_case_backend
+   - npm install
+   - npm run prisma:generate
+   - npm run prisma:migrate
+   - npm run prisma:seed
+   - npm run dev (starts on http://localhost:4000)
+
+3) Frontend
+   - cd csgo_case_frontend
+   - npm install
+   - npm start (opens http://localhost:3000)
+
+4) CORS / cookies
+   - Access-Control-Allow-Credentials must be true (backend already configured).
+   - Origin must be http://localhost:3000 (configured via FRONTEND_ORIGIN).
+   - Session cookie is httpOnly, sameSite=lax, secure=false (local dev).
+
+5) API validation
+   - GET /cases -> list loads on Home page.
+   - GET /cases/:id -> Case details page.
+   - POST /cases/:id/open -> Requires auth; after login it should return item + newBalance.
+   - GET /inventory -> Inventory modal shows items.
+
+6) Auth flows
+   - If Steam NOT configured (no STEAM_API_KEY): Clicking "Login" triggers /auth/dev-login and refreshes session (user=demo).
+   - If Steam configured: "Login" redirects to Steam via /auth/steam/login and callback sets session.
+
+7) Functional flow
+   - Home loads cases.
+   - Click Login and verify header shows balance.
+   - Open a case: balance decreases, modal shows result item.
+   - Open Inventory: new item appears with value/rarity.

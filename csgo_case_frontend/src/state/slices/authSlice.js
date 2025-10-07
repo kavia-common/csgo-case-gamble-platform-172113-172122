@@ -63,13 +63,13 @@ export const selectUser = (state) => state.auth.user;
 export const selectBalance = (state) => state.auth.balance;
 export const selectAuthStatus = (state) => state.auth.status;
 
-// PUBLIC_INTERFACE
+ // PUBLIC_INTERFACE
 export const getLoginUrl = (state) => {
   /** Compute login URL. Prefer backend endpoint which sets cookies. */
   const realm = process.env.REACT_APP_STEAM_REALM || window.location.origin;
   const returnTo = process.env.REACT_APP_STEAM_RETURN_TO || `${window.location.origin}/auth/callback`;
-  // In many backends this is proxied, but we still provide env fallbacks above if needed.
-  return `${process.env.REACT_APP_API_BASE_URL || ''}/auth/steam/login?realm=${encodeURIComponent(realm)}&return_to=${encodeURIComponent(returnTo)}`;
+  const base = process.env.REACT_APP_API_BASE_URL || 'http://localhost:4000';
+  return `${base}/auth/steam/login?realm=${encodeURIComponent(realm)}&return_to=${encodeURIComponent(returnTo)}`;
 };
 
 // PUBLIC_INTERFACE
