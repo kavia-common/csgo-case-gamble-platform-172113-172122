@@ -20,7 +20,7 @@ Auth
 ---
 
 ## Backend workspace (csgo_case_backend)
-A minimal Node.js backend workspace with Prisma + SQLite to manage users, items, cases, and case openings.
+Node.js + Express backend with Prisma + SQLite. Provides cookie-based auth (Steam OpenID if configured or dev login), cases, and inventory APIs.
 
 ### Setup
 1) cd csgo_case_backend
@@ -33,10 +33,31 @@ A minimal Node.js backend workspace with Prisma + SQLite to manage users, items,
    - npm run prisma:migrate
 6) Seed initial data (demo user, items, cases, drop weights):
    - npm run prisma:seed
-7) Optional: open Prisma Studio to inspect data:
+7) Start the API:
+   - npm run dev   # with nodemon
+   - or npm start  # plain node
+8) Optional: open Prisma Studio to inspect data:
    - npm run prisma:studio
 
 By default, DATABASE_URL points to file:./dev.db (SQLite). You can replace with another path or switch providers later.
+
+### API Overview
+- CORS: origin = FRONTEND_ORIGIN, credentials enabled; cookies use httpOnly, sameSite=lax, secure=false (local).
+- Auth:
+  - GET /auth/session -> { user, balance }
+  - GET /auth/dev-login -> creates a demo session (only when STEAM_API_KEY not set)
+  - POST /auth/logout or GET /auth/logout
+  - If Steam enabled:
+    - GET /auth/steam/login
+    - GET /auth/steam/return (callback)
+- Cases:
+  - GET /cases
+  - GET /cases/:id
+  - POST /cases/:id/open (requires session)
+- Inventory:
+  - GET /inventory (requires session)
+  - POST /inventory/:inventoryId/sell (optional)
+  - POST /inventory/:inventoryId/withdraw (optional stub)
 
 ### Notes
 - Reusable Prisma client is exported from src/db/index.js (getPrisma()).
@@ -44,4 +65,5 @@ By default, DATABASE_URL points to file:./dev.db (SQLite). You can replace with 
   - User: username "demo" with 250.00 starting balance and a couple of starter items.
   - Items: A small catalog with rarity and values.
   - Cases: Starter, Pro, Elite with weighted drop tables.
-- This backend workspace currently provides DB layer only; API routes/services can be added in subsequent steps.
+- Randomness: utils/random.js implements weightedRandom to simulate case openings.
+- Sessions: cookie-session with SESSION_SECRET; adjust secure flag for production HTTPS.

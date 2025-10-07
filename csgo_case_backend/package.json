@@ -1,9 +1,11 @@
 {
   "name": "csgo-case-backend",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
   "type": "module",
   "scripts": {
+    "dev": "nodemon src/server.js",
+    "start": "node src/server.js",
     "prisma:generate": "prisma generate",
     "prisma:migrate": "cross-env DATABASE_URL=${DATABASE_URL:-\"file:./dev.db\"} prisma migrate dev --name init",
     "prisma:deploy": "cross-env DATABASE_URL=${DATABASE_URL:-\"file:./dev.db\"} prisma migrate deploy",
@@ -12,10 +14,17 @@
   },
   "dependencies": {
     "@prisma/client": "^5.19.1",
-    "dotenv": "^16.4.5"
+    "cookie-session": "^2.0.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "morgan": "^1.10.0",
+    "passport": "^0.7.0",
+    "passport-steam": "^1.0.18"
   },
   "devDependencies": {
     "cross-env": "^7.0.3",
+    "nodemon": "^3.1.4",
     "prisma": "^5.19.1"
   }
 }
