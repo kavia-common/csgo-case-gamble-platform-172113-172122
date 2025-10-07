@@ -1,0 +1,1 @@
+This file is a placeholder note: For production, add a toast slice and connect Toast component to display messages from thunks (success/error).
